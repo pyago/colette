@@ -1,0 +1,23 @@
+# Separate Compose project — does not share networks/volumes with other apps.
+# Run from this directory only: docker compose up -d --build
+
+name: colette
+
+services:
+  web:
+    build: .
+    image: colette-web:latest
+    container_name: colette-web
+    restart: unless-stopped
+    # Host port 8088 — change if that port is taken. Does not use 80/443.
+    # Bind to localhost only if you terminate TLS on a reverse proxy:
+    #   - "127.0.0.1:8088:80"
+    ports:
+      - "8088:80"
+    networks:
+      - colette_net
+
+networks:
+  colette_net:
+    name: colette_net
+    driver: bridge

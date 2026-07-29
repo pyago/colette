@@ -1,0 +1,13 @@
+.git
+.dart_tool
+.build
+build
+.idea
+*.iml
+.DS_Store
+docs
+test
+coverage
+**/*.md
+.gitignore
+.metadata
