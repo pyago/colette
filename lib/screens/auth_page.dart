@@ -52,7 +52,13 @@ class _AuthPageState extends State<AuthPage> {
         title: const Text('Sign in'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
         ),
       ),
       body: Center(

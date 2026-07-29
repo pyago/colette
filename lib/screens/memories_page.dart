@@ -28,7 +28,13 @@ class MemoriesPage extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => context.go(auth.isSignedIn ? '/share' : '/auth'),
+            onPressed: () {
+              if (auth.isSignedIn) {
+                context.go('/share');
+              } else {
+                context.push('/auth');
+              }
+            },
             child: const Text('Share'),
           ),
         ],

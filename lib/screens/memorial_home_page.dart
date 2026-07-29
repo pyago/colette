@@ -171,9 +171,13 @@ class MemorialHomePage extends StatelessWidget {
                                   width: 1.4,
                                 ),
                               ),
-                              onPressed: () => context.go(
-                                auth.isSignedIn ? '/share' : '/auth',
-                              ),
+                              onPressed: () {
+                                if (auth.isSignedIn) {
+                                  context.go('/share');
+                                } else {
+                                  context.push('/auth');
+                                }
+                              },
                               child: const Text('Share a story'),
                             ),
                             if (auth.isAdmin)
@@ -264,9 +268,13 @@ class _TopBar extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: TextButton(
         style: TextButton.styleFrom(foregroundColor: AppColors.accentSoft),
-        onPressed: () => context.go(
-          auth.isSignedIn ? '/share' : '/auth',
-        ),
+        onPressed: () {
+          if (auth.isSignedIn) {
+            context.go('/share');
+          } else {
+            context.push('/auth');
+          }
+        },
         child: Text(
           auth.isSignedIn
               ? (auth.user?.displayName ?? auth.user?.email ?? 'Account')
