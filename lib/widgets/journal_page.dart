@@ -36,12 +36,10 @@ class JournalPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         child: Stack(
           children: [
-            Positioned.fill(
-              child: CustomPaint(painter: _LinedPaperPainter()),
-            ),
+            Positioned.fill(child: CustomPaint(painter: _LinedPaperPainter())),
             if (lilyCorner != LilyCorner.none)
               Positioned(
-                top: lilyCorner == LilyCorner.topLeft ? -10 : null,
+                top: lilyCorner == LilyCorner.topLeft ? 8 : null,
                 left: lilyCorner == LilyCorner.topLeft ? 8 : null,
                 right: lilyCorner == LilyCorner.bottomRight ? -6 : null,
                 bottom: lilyCorner == LilyCorner.bottomRight ? -8 : null,
@@ -56,7 +54,12 @@ class JournalPage extends StatelessWidget {
                 ),
               ),
             Padding(
-              padding: padding.copyWith(left: padding.left + 28),
+              padding: padding.copyWith(
+                left: padding.left + 28,
+                top: lilyCorner == LilyCorner.topLeft
+                    ? padding.top + 110
+                    : padding.top,
+              ),
               child: child,
             ),
             const Positioned(
@@ -80,11 +83,7 @@ class _LinedPaperPainter extends CustomPainter {
       ..shader = const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          Color(0x33C9A7E0),
-          Color(0x00FFFFFF),
-          Color(0x22B07CC8),
-        ],
+        colors: [Color(0x33C9A7E0), Color(0x00FFFFFF), Color(0x22B07CC8)],
       ).createShader(Offset.zero & size);
     canvas.drawRect(Offset.zero & size, wash);
 
@@ -99,11 +98,7 @@ class _LinedPaperPainter extends CustomPainter {
     final margin = Paint()
       ..color = const Color(0x55E8A0A0)
       ..strokeWidth = 1.2;
-    canvas.drawLine(
-      const Offset(36, 0),
-      Offset(36, size.height),
-      margin,
-    );
+    canvas.drawLine(const Offset(36, 0), Offset(36, size.height), margin);
   }
 
   @override

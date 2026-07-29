@@ -49,7 +49,7 @@ class MemorialHomePage extends StatelessWidget {
                       children: [
                         Text(
                           'Our Precious Angel',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.left,
                           style: GoogleFonts.caveat(
                             fontSize: 32,
                             fontWeight: FontWeight.w700,
@@ -88,7 +88,7 @@ class MemorialHomePage extends StatelessWidget {
                     child: Text(
                       '"Some people only stay a moment, but their love lasts '
                       'a lifetime."',
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.left,
                       style: GoogleFonts.caveat(
                         fontSize: 28,
                         fontStyle: FontStyle.italic,
@@ -104,7 +104,7 @@ class MemorialHomePage extends StatelessWidget {
                       children: [
                         Text(
                           'Her Legacy',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.left,
                           style: GoogleFonts.caveat(
                             fontSize: 32,
                             fontWeight: FontWeight.w700,
@@ -134,7 +134,7 @@ class MemorialHomePage extends StatelessWidget {
                       children: [
                         Text(
                           'Tributes & Memories',
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.left,
                           style: GoogleFonts.caveat(
                             fontSize: 32,
                             fontWeight: FontWeight.w700,
@@ -154,7 +154,7 @@ class MemorialHomePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 18),
                         Wrap(
-                          alignment: WrapAlignment.center,
+                          alignment: WrapAlignment.start,
                           spacing: 12,
                           runSpacing: 12,
                           children: [
@@ -200,7 +200,7 @@ class MemorialHomePage extends StatelessWidget {
                   const SizedBox(height: 28),
                   Text(
                     'In Loving Memory of Collete Marie Williams',
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.left,
                     style: GoogleFonts.caveat(
                       fontSize: 22,
                       color: AppColors.accentSoft,
@@ -209,7 +209,7 @@ class MemorialHomePage extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     'August 5, 2025 – August 6, 2025',
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.left,
                     style: GoogleFonts.caveat(
                       fontSize: 20,
                       color: Colors.white70,
@@ -243,15 +243,54 @@ class _ScrapbookBackdrop extends StatelessWidget {
           ],
         ),
       ),
-      child: Opacity(
-        opacity: 0.35,
-        child: Image.asset(
-          'assets/images/purple_bg.png',
-          fit: BoxFit.cover,
-          width: double.infinity,
-          height: double.infinity,
-          errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-        ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Opacity(
+            opacity: 0.32,
+            child: Image.asset(
+              'assets/images/purple_bg.png',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              errorBuilder: (context, error, stackTrace) =>
+                  const SizedBox.shrink(),
+            ),
+          ),
+          // Soft floral wash — densest blooms sit bottom-left in the photo.
+          Opacity(
+            opacity: 0.22,
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                AppColors.background.withValues(alpha: 0.35),
+                BlendMode.softLight,
+              ),
+              child: Image.asset(
+                'assets/images/flowers_2.jpeg',
+                fit: BoxFit.cover,
+                alignment: const Alignment(-0.35, 0.55),
+                width: double.infinity,
+                height: double.infinity,
+                errorBuilder: (context, error, stackTrace) =>
+                    const SizedBox.shrink(),
+              ),
+            ),
+          ),
+          // Keep title area readable; let blooms breathe lower on the page.
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0x664A2F5C),
+                  Color(0x224A2F5C),
+                  Color(0x552E1A3D),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -291,10 +330,11 @@ class _HeroTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'In Loving Memory of Collete Marie Williams',
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.left,
           style: GoogleFonts.caveat(
             fontSize: 42,
             fontWeight: FontWeight.w700,
@@ -305,7 +345,7 @@ class _HeroTitle extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           'August 5, 2025 – August 6, 2025',
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.left,
           style: GoogleFonts.caveat(
             fontSize: 26,
             color: AppColors.accentSoft,
@@ -314,7 +354,7 @@ class _HeroTitle extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Forever Loved  ♥  Forever Remembered  ♥  Forever Missed',
-          textAlign: TextAlign.center,
+          textAlign: TextAlign.left,
           style: GoogleFonts.caveat(
             fontSize: 22,
             color: AppColors.accentSoft,
