@@ -3,90 +3,81 @@
 Flutter web memorial for **Collete Marie Williams**, with a public memory library,
 user story submissions, and an admin console for Kwai.
 
-## Local preview (no Firebase yet)
+**Backend:** Firebase Auth + Cloud Firestore (+ Storage when billing is enabled).
 
-```bash
-cd /Users/pyago/Projects/paiego/colette
-flutter run -d chrome
-# or: flutter run -d macos
-```
+| Role | Can do |
+|------|--------|
+| Visitor | Memorial splash, approved memories (no sign-in) |
+| Signed-in user | Submit story / image / video URL (pending review) |
+| Admin | Approve/reject, publish own posts, thank/reply (mailto) |
 
-In preview mode:
-
-- Memorial splash matches `docs/Collete_Marie_Williams_Memorial_Updated.html`
-- Email register/sign-in works locally (in-memory)
-- Use **Preview as admin (local)** on the Sign in page, or sign in as `paul.yago@gmail.com`
-- Social providers stay disabled until Firebase Auth is configured
-
-## Admins
-
-Configured in `lib/config/admin_config.dart`:
+Admins (see `lib/config/admin_config.dart`):
 
 - `paul.yago@gmail.com`
 - `kibawaF1990@gmail.com` (Kwai — owner)
 
-## Enable Firebase
+## Firebase project
 
-1. Create a Firebase project (Blaze only needed if you exceed free Storage/egress later).
-2. Enable **Authentication** providers:
-   - Email/Password
-   - Google
-   - Facebook
-   - GitHub
-   - Apple (needs Apple Developer + domain verify)
-3. Create **Firestore** + **Storage**.
-4. From this folder:
+| | |
+|--|--|
+| Project | [colette-memorial](https://console.firebase.google.com/project/colette-memorial/overview) |
+| Web app | Colette Web |
+| Config | `lib/firebase_options.dart` (filled in) |
+| Live mode switch | `FirebaseConfig.enabled` in `lib/config/firebase_config.dart` |
+
+### Finish Auth in the console (required once)
+
+Firebase Auth must be started in the console before email/OAuth work:
+
+1. Open [Authentication → Get started](https://console.firebase.google.com/project/colette-memorial/authentication)
+2. Enable providers:
+   - **Email/Password**
+   - **Google**
+   - **Facebook** (needs Facebook app ID + secret)
+   - **GitHub** (needs GitHub OAuth app client ID + secret)
+   - **Apple** (needs Apple Developer + domain verify)
+3. Under Authentication → Settings → Authorized domains, keep `localhost` and add your custom domain when you deploy.
+4. Set `FirebaseConfig.enabled = true` and restart the app.
+
+### Deploy rules / indexes
 
 ```bash
-dart pub global activate flutterfire_cli
-flutterfire configure
+cd /Users/pyago/Projects/paiego/colette
+firebase deploy --only firestore --project colette-memorial
+# After Storage is created (Blaze billing required for uploads):
+# firebase deploy --only storage --project colette-memorial
 ```
 
-5. Set `FirebaseConfig.enabled = true` in `lib/config/firebase_config.dart`.
+Media is still **URL fields** for now. Direct file upload needs Firebase Storage, which requires linking a billing account on this project.
 
-### Suggested Firestore rules (tighten later)
+## Local preview (Firebase off)
 
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isAdmin() {
-      return request.auth != null &&
-        request.auth.token.email.lower() in
-          ['paul.yago@gmail.com', 'kibawaf1990@gmail.com'];
-    }
-    match /posts/{id} {
-      allow read: if resource.data.status == 'approved' || isAdmin()
-        || (request.auth != null && resource.data.authorId == request.auth.uid);
-      allow create: if request.auth != null
-        && request.resource.data.authorId == request.auth.uid
-        && request.resource.data.status == 'pending';
-      allow update, delete: if isAdmin();
-    }
-  }
-}
+```bash
+cd /Users/pyago/Projects/paiego/colette
+flutter run -d chrome
 ```
 
-## Deploy + Porkbun domain
+With `FirebaseConfig.enabled = false`:
 
-1. Build:
+- Email register/sign-in is in-memory
+- Use **Preview as admin (local)** on Sign in, or sign in as `paul.yago@gmail.com`
+- Social providers stay disabled
+
+## Local preview (Firebase on)
+
+After Auth providers are enabled in the console:
+
+1. Set `FirebaseConfig.enabled = true`
+2. `flutter run -d chrome`
+3. Register with email/password or a social provider
+4. Share a story → it lands in Firestore as `pending`
+5. Sign in as an admin email → `/admin` to approve
+
+## Deploy hosting + Porkbun domain
 
 ```bash
 flutter build web --release
-firebase init hosting   # public directory: build/web
-firebase deploy --only hosting
+firebase deploy --only hosting --project colette-memorial
 ```
 
-2. In Firebase Hosting, add your custom domain.
-3. At Porkbun, add the DNS records Firebase shows (usually A/AAAA or CNAME).
-4. Wait for SSL provisioning.
-
-## Product flow
-
-| Role | Can do |
-|------|--------|
-| Visitor | Memorial splash, approved memories |
-| Signed-in user | Submit story (pending review) |
-| Admin | Approve/reject, publish own posts, thank/reply (opens mailto) |
-
-Media upload via Firebase Storage is stubbed as URL fields for now; next step after Auth/Firestore is live.
+Then add the custom domain in Firebase Hosting and the DNS records Porkbun shows.

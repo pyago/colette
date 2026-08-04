@@ -1,8 +1,5 @@
-// Placeholder — replace by running:
-//   dart pub global activate flutterfire_cli
-//   flutterfire configure
-//
-// Until then, the app runs in local preview mode (see FirebaseConfig.enabled).
+// Generated for Firebase project colette-memorial.
+// Re-run `flutterfire configure --project=colette-memorial` if apps change.
 
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
@@ -30,11 +27,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: 'REPLACE_ME',
-    messagingSenderId: 'REPLACE_ME',
-    projectId: 'REPLACE_ME',
-    authDomain: 'REPLACE_ME.firebaseapp.com',
-    storageBucket: 'REPLACE_ME.appspot.com',
+    apiKey: 'AIzaSyCfrCgihdjYH4mmbdvxL6XpabgZUDo6jpA',
+    appId: '1:98026882793:web:db97c217e77d8880089278',
+    messagingSenderId: '98026882793',
+    projectId: 'colette-memorial',
+    authDomain: 'colette-memorial.firebaseapp.com',
+    storageBucket: 'colette-memorial.firebasestorage.app',
   );
 }
