@@ -36,7 +36,7 @@ Firebase Auth must be started in the console before email/OAuth work:
    - **Facebook** (needs Facebook app ID + secret)
    - **GitHub** (needs GitHub OAuth app client ID + secret)
    - **Apple** (needs Apple Developer + domain verify)
-3. Under Authentication → Settings → Authorized domains, keep `localhost` and add your custom domain when you deploy.
+3. Under Authentication → Settings → Authorized domains, keep `localhost` and `colette-memorial.firebaseapp.com`, then add the Namecheap domain (apex and `www`) after DNS is connected.
 4. Set `FirebaseConfig.enabled = true` and restart the app.
 
 ### Deploy rules / indexes
@@ -73,11 +73,56 @@ After Auth providers are enabled in the console:
 4. Share a story → it lands in Firestore as `pending`
 5. Sign in as an admin email → `/admin` to approve
 
-## Deploy hosting + Porkbun domain
+## Deploy hosting + Namecheap domain
+
+Firebase URLs (already live):
+
+| | |
+|--|--|
+| Hosting | https://colette-memorial.web.app |
+| Auth / fallback | https://colette-memorial.firebaseapp.com |
+
+Point the Namecheap domain at those hosts. Do **not** use Namecheap URL Redirect / forwarding — that only 302s to `.web.app` and breaks HTTPS + Google sign-in. Use Firebase Hosting custom domain + DNS A records.
+
+### 1. Deploy the site
 
 ```bash
 flutter build web --release
 firebase deploy --only hosting --project colette-memorial
 ```
 
-Then add the custom domain in Firebase Hosting and the DNS records Porkbun shows.
+### 2. Attach the domain in Firebase
+
+1. Open [Hosting](https://console.firebase.google.com/project/colette-memorial/hosting)
+2. **Add custom domain** → enter the apex Namecheap domain (example: `yourdomain.com`)
+3. Check **redirect `www` to the apex** (or the reverse, if you prefer `www` as canonical)
+4. Copy the TXT verification value Firebase shows
+
+### 3. Namecheap Advanced DNS
+
+Namecheap → domain → **Advanced DNS**. Delete the stock **URL Redirect** and parking **CNAME** records (they conflict). Keep nameservers on Namecheap BasicDNS.
+
+Add exactly what Firebase shows. For Namecheap the Host field is `@` or `www`, not the full domain:
+
+| Type | Host | Value | TTL |
+|------|------|--------|-----|
+| TXT | `@` | the verification string from the Firebase wizard | Automatic |
+| A | `@` | `199.36.158.100` (confirm in the wizard) | Automatic |
+| A | `www` | `199.36.158.100` (confirm in the wizard) | Automatic |
+
+If the wizard also lists AAAA records, add those too. Do not CNAME the apex to `colette-memorial.web.app` — Namecheap cannot CNAME `@`.
+
+Wait until Firebase Hosting status is **Connected** (SSL can take up to a few hours). Check with:
+
+```bash
+./scripts/verify-namecheap-dns.sh yourdomain.com
+```
+
+### 4. Auth so Google sign-in returns to this domain
+
+Firebase Auth still uses `authDomain: colette-memorial.firebaseapp.com` in `lib/firebase_options.dart` (leave it). After the custom domain is Connected:
+
+1. [Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/colette-memorial/authentication/settings) → add `yourdomain.com` and `www.yourdomain.com`
+2. [Google Cloud credentials](https://console.cloud.google.com/apis/credentials?project=colette-memorial) → the **Web** OAuth 2.0 client:
+   - Authorized JavaScript origins: `https://yourdomain.com`, `https://www.yourdomain.com`, `https://colette-memorial.web.app`, `https://colette-memorial.firebaseapp.com`
+   - Authorized redirect URIs: keep `https://colette-memorial.firebaseapp.com/__/auth/handler` (and add `https://yourdomain.com/__/auth/handler` only if you later change `authDomain`)

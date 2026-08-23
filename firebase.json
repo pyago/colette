@@ -7,6 +7,7 @@
     "rules": "storage.rules"
   },
   "hosting": {
+    "site": "colette-memorial",
     "public": "build/web",
     "ignore": [
       "firebase.json",
