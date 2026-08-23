@@ -31,6 +31,9 @@ class DefaultFirebaseOptions {
     appId: '1:98026882793:web:db97c217e77d8880089278',
     messagingSenderId: '98026882793',
     projectId: 'colette-memorial',
+    // Keep the Firebase Auth handler host. Custom Namecheap domains are added
+    // under Authentication → Authorized domains; do not point authDomain at
+    // Namecheap until that domain is Connected on Hosting.
     authDomain: 'colette-memorial.firebaseapp.com',
     storageBucket: 'colette-memorial.firebasestorage.app',
   );
