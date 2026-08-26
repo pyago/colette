@@ -36,8 +36,18 @@ Firebase Auth must be started in the console before email/OAuth work:
    - **Facebook** (needs Facebook app ID + secret)
    - **GitHub** (needs GitHub OAuth app client ID + secret)
    - **Apple** (needs Apple Developer + domain verify)
-3. Under Authentication → Settings → Authorized domains, keep `localhost` and add your custom domain when you deploy.
-4. Set `FirebaseConfig.enabled = true` and restart the app.
+3. Under [Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/colette-memorial/authentication/settings), keep `localhost`, `colette-memorial.firebaseapp.com`, and `colette-memorial.web.app`, then add:
+   - `colletemariefoundation.com`
+   - `www.colletemariefoundation.com`
+4. On the [Google Cloud OAuth web client](https://console.cloud.google.com/apis/credentials?project=colette-memorial), add Authorized JavaScript origins:
+   - `https://colletemariefoundation.com`
+   - `https://www.colletemariefoundation.com`
+   - `https://colette-memorial.web.app`
+   - `https://colette-memorial.firebaseapp.com`
+   Keep the redirect URI `https://colette-memorial.firebaseapp.com/__/auth/handler`.
+5. Set `FirebaseConfig.enabled = true` and restart the app.
+
+Without step 3, Google sign-in from the Namecheap domain fails with `firebase_auth/unauthorized-domain`. Confirm with `./scripts/check-auth-domains.sh`.
 
 ### Deploy rules / indexes
 
@@ -73,11 +83,19 @@ After Auth providers are enabled in the console:
 4. Share a story → it lands in Firestore as `pending`
 5. Sign in as an admin email → `/admin` to approve
 
-## Deploy hosting + Porkbun domain
+## Deploy hosting + Namecheap domain
+
+Live URLs:
+
+| | |
+|--|--|
+| Custom domain | https://colletemariefoundation.com |
+| Hosting | https://colette-memorial.web.app |
+| Auth handler | https://colette-memorial.firebaseapp.com |
 
 ```bash
 flutter build web --release
 firebase deploy --only hosting --project colette-memorial
 ```
 
-Then add the custom domain in Firebase Hosting and the DNS records Porkbun shows.
+Point Namecheap DNS at Firebase Hosting (A record `@` → `199.36.158.100`). Do not use Namecheap URL forwarding. After the custom domain is Connected, add it to Authorized domains as in the Auth steps above.
