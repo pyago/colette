@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../config/firebase_config.dart';
+import '../services/auth_errors.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 
@@ -39,7 +40,7 @@ class _AuthPageState extends State<AuthPage> {
       await action();
       if (mounted) context.go('/');
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = describeAuthError(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
